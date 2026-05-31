@@ -72,9 +72,6 @@ languages = {
 def clean_gemini_response(text):
     text = text.strip()
 
-    if text.startswith("```html"):
-        text = text.replace("```html", "", 1).strip()
-
     if text.startswith("```"):
         text = text.replace("```", "", 1).strip()
 
