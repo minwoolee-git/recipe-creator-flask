@@ -1,16 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Generated Recipe</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <h2>Your Recipe:</h2>
+{% extends "base.html" %}
 
-    <div class="recipe-result">
-        <p>{{ recipe | safe }}</p>
+{% block content %}
+<div id="root" class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="page-header">
+                <h2 class="alert alert-success text-center">Generated Recipe</h2>
+
+                <div class="recipe-result">
+                    <p>{{ recipe | safe }}</p>
+                </div>
+
+                <div class="text-center">
+                    <a href="/" class="btn btn-primary">Generate another recipe</a>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <a href="/">Generate another recipe</a>
-</body>
-</html>
+</div>
+{% endblock %}
