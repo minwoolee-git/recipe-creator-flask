@@ -43,7 +43,6 @@ dietary_restrictions = [
     "Locally Sourced"
 ]
 
-# 언어 목록
 languages = {
     "English": "en",
     "Spanish": "es",
@@ -70,6 +69,21 @@ languages = {
 }
 
 
+def clean_gemini_response(text):
+    text = text.strip()
+
+    if text.startswith("```html"):
+        text = text.replace("```html", "", 1).strip()
+
+    if text.startswith("```"):
+        text = text.replace("```", "", 1).strip()
+
+    if text.endswith("```"):
+        text = text[:-3].strip()
+
+    return text
+
+
 @app.route("/")
 def index():
     return render_template(
@@ -91,9 +105,17 @@ def generate_recipe():
         return "Kindly provide exactly 3 ingredients."
 
     prompt = f"""
-    Craft a recipe in HTML using {', '.join(ingredients)}.
-    Ensure the recipe ingredients appear at the top,
-    followed by the step-by-step instructions.
+    Create a recipe using only these three main ingredients: {', '.join(ingredients)}.
+
+    Output rules:
+    - Write the answer as an HTML fragment only.
+    - Do not include ```html.
+    - Do not include ``` code fences.
+    - Do not include markdown formatting.
+    - Do not explain that this is HTML.
+    - Start directly with an HTML heading tag.
+    - Put the ingredients section first.
+    - Put the step-by-step cooking instructions after the ingredients.
     """
 
     if selected_cuisine:
@@ -103,11 +125,11 @@ def generate_recipe():
         prompt += f"\nThe recipe should have the following restrictions: {', '.join(selected_restrictions)}."
 
     if selected_language:
-        prompt += f"\nPlease write the entire recipe in {selected_language}."
+        prompt += f"\nWrite the entire recipe in {selected_language}."
 
     try:
         response = model.generate_content(prompt)
-        recipe = response.text
+        recipe = clean_gemini_response(response.text)
     except Exception as e:
         recipe = f"Error generating recipe: {str(e)}"
 
